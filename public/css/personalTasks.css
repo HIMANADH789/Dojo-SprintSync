@@ -1,0 +1,7 @@
+.b{
+    display:flex;
+}
+.child1{
+    height:100vh;
+    width:80px;
+}

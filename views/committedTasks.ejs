@@ -1,0 +1,29 @@
+<%- layout('layouts/homeLayout') %>
+    <h1>Personal Tasks</h1>
+    <ul>
+    <% for(let t of user.personalTasks){ %>
+        <li><%= t.taskName %>- <a href="/task/personal/<%=user._id%>/<%=t._id%>">@<%=t.taskId %></a></li>
+    <% }%>
+    </ul>
+    <h1>Organizing Teams Tasks</h1>
+    <ul>
+    <% for(let t of user.admin){ %>
+        <li><%= t.teamName %>- <a href="/task/team/<%=t._id%>">@<%=t.teamId %></a></li>
+    <% }%>
+    </ul>
+    <h1>Engaged Tasks</h1>
+    <ul>
+    <% for(let t of user.engagedTasks){ %>
+        <li><%= t.teamName %>- <a href="/task/team/<%=t._id%>">@<%=t.teamId %></a></li>
+    <% }%>
+    </ul>
+    <ul>
+        <% for(let s of user.engagedGroupSubTasks){ %>
+            <li>
+                <%= s.subTask.name%>-(<%=s.sprint.name%>) <%= s.project.name%>
+                <form action="/task/team/project/sprint/submit-subTask/<%=s.team._id%>/<%=s.project._id%>/<%=s.sprint._id%>/<%=s.subTask._id%>" method="post">
+                    <button>Completed</button>
+                </form>
+            </li>
+            <%}%>
+    </ul>

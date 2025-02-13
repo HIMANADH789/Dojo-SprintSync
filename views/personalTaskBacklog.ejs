@@ -1,0 +1,243 @@
+<%- layout('layouts/personalTaskTemplateLayout') %>
+
+<div class="flex justify-between items-center my-4">
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createSprintModal">Create Sprint</button>
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createSubtaskModal">Create Subtask</button>
+</div>
+
+<!-- Create Sprint Modal -->
+<div class="modal fade" id="createSprintModal" tabindex="-1" aria-labelledby="createSprintModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createSprintModalLabel">Create Sprint</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/task/personal/add-sprint/<%= user._id %>/<%= task._id %>" method="post">
+                    <label for="name">Name of Sprint</label>
+                    <input type="text" id="name" name="name" class="form-control" required>
+                    <label for="dueDate">Due Date</label>
+                    <input type="datetime-local" id="dueDate" name="dueDate" class="form-control" required>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Add Sprint</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Subtask Modal -->
+<div class="modal fade" id="createSubtaskModal" tabindex="-1" aria-labelledby="createSubtaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createSubtaskModalLabel">Create Subtask</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/task/personal/add-subtask/<%= user._id %>/<%= task._id %>" method="post">
+                    <label for="subtaskName">Name of Subtask</label>
+                    <input type="text" id="subtaskName" name="name" class="form-control" required>
+                    <label for="dueDate">Due Date</label>
+                    <input type="datetime-local" id="dueDate" name="dueDate" class="form-control" required>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Add Subtask</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sprint Containers -->
+<button id="toggle-sprints">Show Sprints</button>
+
+<!-- Sprints Container (Initially Hidden) -->
+<div class="sprints-container hidden">
+    
+    <% for (let sprint of task.sprints) { %>
+        <div class="sprint-box hidden" id="sprint-<%= sprint._id %>" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <div class="sprint">
+            <p><%= sprint.name %> - <%= sprint.burnTime.weeks %>W <%= sprint.burnTime.days %>D <%= sprint.burnTime.hours %>H</p>
+      <div>
+            <% if (sprint._doc.isPlanned) { %>
+                <form class="set-plan"action="/task/personal/sprint/unset-plan-backlog/<%= user._id %>/<%= task._id %>/<%= sprint._id %>?_method=put" method="post">
+                    <button>Unset Plan</button>
+                </form>
+            <% } else { %>
+                <form class="set-plan" action="/task/personal/sprint/set-plan-backlog/<%= user._id %>/<%= task._id %>/<%= sprint._id %>?_method=put" method="post">
+                    <button>Set Plan</button>
+                </form>
+            <% } %>
+
+            <!-- SubTasks Toggler -->
+            <button class="toggle-subtasks">Show SubTasks</button>
+        </div>
+        </div>
+            <!-- SubTasks List Inside Sprint -->
+<div class="subTasks hidden">
+    <ul>
+    <% for (let subTask of sprint.subTasks) { %>
+        <li id="subtask-<%= subTask._id %>" draggable="true" ondragstart="drag(event)">
+            <%= subTask.name %> - <%= subTask.burnTime.weeks %>W <%= subTask.burnTime.days %>D <%= subTask.burnTime.hours %>H
+            
+            <!-- View Button -->
+            <button class="btn btn-info btn-sm" onclick="openSubtaskModal('<%= subTask._id %>', '<%= subTask.name %>', '<%= subTask.burnTime.weeks %>', '<%= subTask.burnTime.days %>', '<%= subTask.burnTime.hours %>', '<%= sprint._id %>')">View</button>
+            <%if(subTask.status=='initialised'){%>
+                <form action="/task/personal/sprint/subTask-submit/<%=user._id%>/<%=task._id%>/<%=sprint._id%>/<%=subTask._id%>" method="post">
+                    <button>Submit</button>
+                </form>
+                <%}else if(subTask.status=="uninitialised"){%>
+                    <form action="/task/personal/sprint/subTask-start/<%=user._id%>/<%=task._id%>/<%=sprint._id%>/<%=subTask._id%>" method="post">
+                        <button>Commit</button>
+                    </form>
+                <%}%>
+        </li>
+    <% } %>
+</ul>
+<button class="btn btn-warning btn-sm" onclick="openEditSprintModal('<%= sprint._id %>', '<%= sprint.name %>', '<%= sprint.dueDate %>')">Edit</button>
+
+</div>
+        </div>
+    <% } %>
+</div>
+<!-- Create Backlog Section -->
+<h2>Backlog</h2>
+<ul id="backlog" class="list-group w-100">
+    <% for (let subTask of task.subTasks) { %>
+        <% if (subTask.sprint==undefined) { %> 
+            <li id="subtask-<%= subTask._id %>" draggable="true" ondragstart="drag(event)">
+                <%= subTask.name %> - <%= subTask.burnTime.weeks %>W <%= subTask.burnTime.days %>D <%= subTask.burnTime.hours %>H
+                
+                <!-- View Button -->
+                <button class="btn btn-info btn-sm" onclick="openSubtaskModal('<%= subTask._id %>', '<%= subTask.name %>', '<%= subTask.burnTime.weeks %>', '<%= subTask.burnTime.days %>', '<%= subTask.burnTime.hours %>', 'undefined')">View</button>
+                <%=subTask.status%>
+                <%if(subTask.status=='initialised'){%>
+                <form action="/task/personal/sprint/subTask-submit/<%=user._id%>/<%=task._id%>/xx/<%=subTask._id%>" method="post">
+                    <button>Submit</button>
+                </form>
+                <%}else if(subTask.status=="uninitialised"){%>
+                    <form action="/task/personal/sprint/subTask-start/<%=user._id%>/<%=task._id%>/xxx/<%=subTask._id%>" method="post">
+                        <button>Commit</button>
+                    </form>
+                <%}%>
+            </li>
+        <% } %>
+    <% } %>
+</ul>
+
+<div class="modal fade" id="subtaskViewModal" tabindex="-1" aria-labelledby="subtaskViewModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Subtask Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Name:</strong> <span id="modalSubtaskName"></span></p>
+                <p><strong>Burn Time:</strong> <span id="modalSubtaskBurnTime"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-warning" onclick="openEditSubtaskModal()">Edit</button>
+                <form id="deleteSubtaskForm" method="post">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Edit Sprint Modal -->
+<div class="modal fade" id="editSprintModal" tabindex="-1" aria-labelledby="editSprintModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Sprint</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editSprintForm" method="post">
+                    <label for="editSprintName">Name of Sprint</label>
+                    <input type="text" id="editSprintName" name="name" class="form-control" required>
+
+                    <label for="editSprintDueDate">Due Date</label>
+                    <input type="datetime-local" id="editSprintDueDate" name="dueDate" class="form-control" required>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Save Changes</button>
+                    </div>
+                </form>
+
+                <!-- Delete Sprint Button -->
+                <form id="deleteSprintForm" method="post">
+                    <button type="submit" class="btn btn-danger">Delete Sprint</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Subtask Modal -->
+<div class="modal fade" id="editSubtaskModal" tabindex="-1" aria-labelledby="editSubtaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Subtask</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editSubtaskForm" method="post">
+                    <label for="editSubtaskName">Name</label>
+                    <input type="text" id="editSubtaskName" name="name" class="form-control" required>
+                    <label for="editSubtaskDueDate">Due Date</label>
+                    <input type="datetime-local" id="editSubtaskDueDate" name="dueDate" class="form-control" required>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const userId = "<%= user._id %>";
+    const taskId = "<%= task._id %>";
+</script>
+<script src="/js/personalTaskBacklog.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const sprintsContainer = document.querySelector(".sprints-container");
+    const sprintBoxes = document.querySelectorAll(".sprint-box");
+    const toggleSprintsButton = document.querySelector("#toggle-sprints");
+
+    let sprintsVisible = false;
+
+    toggleSprintsButton.addEventListener("click", function () {
+        sprintsVisible = !sprintsVisible;
+        sprintsContainer.classList.toggle("hidden", !sprintsVisible);
+        
+        // Hide all sprint boxes if hiding sprints
+        sprintBoxes.forEach(sprint => sprint.classList.toggle("hidden", !sprintsVisible));
+
+        toggleSprintsButton.textContent = sprintsVisible ? "Hide Sprints" : "Show Sprints";
+    });
+
+    // Handle SubTasks toggling inside each sprint
+    document.querySelectorAll(".sprint-box").forEach((sprintBox) => {
+        const subTaskButton = sprintBox.querySelector(".toggle-subtasks");
+        const subTasksList = sprintBox.querySelector(".subTasks");
+        let subTasksVisible = false;
+
+        subTaskButton.addEventListener("click", function () {
+            subTasksVisible = !subTasksVisible;
+            subTasksList.classList.toggle("hidden", !subTasksVisible);
+            subTaskButton.textContent = subTasksVisible ? "Hide SubTasks" : "Show SubTasks";
+        });
+    });
+});
+</script>

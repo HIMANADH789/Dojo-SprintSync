@@ -1,0 +1,50 @@
+<%- layout('layouts/homeLayout') %>
+    <% for(let n of notifications) { %>
+        <% if(n.type=='User') { %>
+            <p>Friend request From- <%=n.user.name %></p> 
+            <p>-@<%=n.user.username%></p>
+            <form action="/user/acceptFriendRequest/<%=n.user._id%>" method="post">
+                <button>Accept</button>
+            </form>
+        <%} else if(n.type=='GroupTask'){ %>
+            <p>From Team- <%=n.group.teamName %></p>
+            <p>-@<%=n.group.teamId%></p>
+            <p>GroupMembers</p>
+            <ul>
+                <% for (let u of n.group.groupMembers){%>
+                    <li>@-<%=u.username%></li>
+                <%} %>
+            </ul>
+            <p>Members requested for-</p>
+            <ul>
+                <% for (let u of n.group.membersUnderRequest){%>
+                    <li>@-<%=u.username%></li>
+                <%} %>
+            </ul>
+            <form action="/user/acceptTeamTask/<%=n.group._id%>" method="post">
+                <button>Accept</button>
+            </form>
+            <%} }%>
+            <h2>SubTask Notifications</h2>
+<ul>
+
+    <% for(let n of notificationTasks) { %>
+        <li>
+            <%= n.subTask.name %> 
+            
+            <% if (n.note != "update") { %>
+                <% if ( n.subTask.status === 'uninitialised') { %>
+                    <form action="/task/team/project/sprint/commit-subTask/<%= n.team._id %>/<%= n.project._id %>/<%= n.sprint._id %>/<%= n.subTask._id %>" method="post">
+                        <button>Commit</button>
+                    </form>
+                <% } else if ( n.subTask.status === 'aborted') { %>
+                    <h2>Aborted</h2>
+                <% } %>
+            <% } else { %>
+                <h2>Due date changed</h2>
+                <%= n.subTask.dueDate %>
+            <% } %>
+        </li>
+    <% } %>
+</ul>
+

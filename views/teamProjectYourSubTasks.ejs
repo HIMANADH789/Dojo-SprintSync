@@ -1,0 +1,36 @@
+<% layout('layouts/teamProjectTemplateLayout')%>
+<h3>Your Tasks</h3>
+<ul>
+<h2>Working Tasks</h2>
+<% for(let i=0; i<tasks.length ; i++){%>
+<% if(tasks[i].status=='initialised') {%>
+    <li><%= tasks[i].name%>- <%=tasks[i].burnTime.weeks%> W <%=tasks[i].burnTime.days%> D <%=tasks[i].burnTime.hours%> Hr</li>
+    <% if(tasks[i].sprint){%>
+        <%=tasks[i].sprint.name%>
+        <form action="/task/team/project/sprint/submit-subTask/<%=team._id%>/<%=project._id%>/<%=tasks[i].sprint._id%>/<%=tasks[i]._id%>" method="post">
+        <button type="submit">Done</button>
+    </form><%}else{%>
+        <form action="/task/team/project/sprint/submit-subTask/<%=team._id%>/<%=project._id%>/<%='xxx'%>/<%=tasks[i]._id%>" method="post">
+            <button type="submit">Done</button>
+        </form>
+<%}}}%>
+<h2>Pending Tasks</h2>
+<% for(let i=0; i<tasks.length; i++) {%>
+    <%if(tasks[i].status=='uninitialised'){%>
+    <li><%= tasks[i].name%>- <%=tasks[i].burnTime.weeks%> W <%=tasks[i].burnTime.days%> D <%=tasks[i].burnTime.hours%> Hr</li>
+    <%if(tasks[i].sprint){%>
+        <%=tasks[i].sprint.name%>
+    <form action="/task/team/project/sprint/commit-subTask/<%=team._id%>/<%=project._id%>/<%=tasks[i].sprint._id%>/<%=tasks[i]._id%>" method="post">
+    <button type="submit">Start The task</button>
+    </form>
+    <%}else{%>
+        <form action="/task/team/project/sprint/commit-subTask/<%=team._id%>/<%=project._id%>/<%='xxx'%>/<%=tasks[i]._id%>" method="post">
+        <button type="submit">Start The task</button>
+        </form>
+<%}}}%>
+<h2>Completed Tasks</h2>
+<% for(let task of tasks) {%>
+    <% if(task.status=='accomplished'){%>
+        <li><%= task.name%>- <%=task.createdAt.weeks%> W <%=task.createdAt.days%> D%> </li>
+    <% }} %>  
+</ul>

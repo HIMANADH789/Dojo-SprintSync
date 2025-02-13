@@ -1,0 +1,48 @@
+
+<%- layout('layouts/homeLayout') %>
+
+<div class="b" style="display: flex; transition: margin-left 0.3s;">
+
+ 
+    <div id="child1" class="child1" style="height: 100vh; width: 250px; background-color: #efefef; color: black; padding-top: 20px; transition: transform 0.3s;">
+        <div class="btn-group" style="width: 100%; padding: 10px;">
+            <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Personal Tasks
+            </button>
+            <ul class="dropdown-menu">
+                <% for(let t of user.personalTasks) { %>
+                    <li>
+                        <%= t.taskName %>
+                        <a href="/task/personal/<%= user._id %>/<%= t._id %>">-@<%= t.taskId %></a>
+                    </li>
+                <% } %>
+                
+            </ul>
+        </div>
+    </div>
+    <div class="child2" style="flex-grow: 1; padding: 20px; transition: margin-left 0.3s; width: 100%;">
+        <h1>Your tasks</h1>
+        <% for(let t of user.personalTasks) { %>
+            <h3>
+                <%= t.taskName %>
+                <a href="/task/personal/<%= user._id %>/<%= t._id %>">-@<%= t.taskId %></a>
+            </h3>
+        <% } %>
+    </div>
+</div>
+<script>
+    const toggleButton = document.getElementById('sidebar-toggler');
+        const sidebar = document.getElementById('child1');
+        const mainContent = document.querySelector('.b');
+
+        toggleButton.addEventListener('click', function() {
+          
+            if (sidebar.style.transform === 'translateX(-100%)') {
+                sidebar.style.transform = 'translateX(0%)';
+                
+            } else {
+                sidebar.style.transform = 'translateX(-100%)';
+                
+            }
+        });
+    </script>

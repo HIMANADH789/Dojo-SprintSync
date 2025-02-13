@@ -1,0 +1,20 @@
+
+<%- layout('layouts/personalTaskTemplateLayout') %>
+
+
+        <h2><%=user.name%></h2>
+    <h1><%=task.taskName%></h1>
+    <h2><%=task.taskId%></h2>
+<h2>Sprints</h2>
+    <% for(let sprint of task.sprints){ %>
+        <li><%=sprint.name%></li>
+    <%}%>
+
+    <form action="/task/personal/add-sprint/<%=user._id%>/<%=task._id%>" method="post">
+        <label for="name">Name of Sprint</label>
+        <input type="text" id="name" name="name">
+        <label for="dueDate">Due Date</label>
+        <input type="datetime-local" id="dueDate" name="dueDate">
+        <button>Add</button>
+    </form>
+    

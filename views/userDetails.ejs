@@ -1,0 +1,21 @@
+<%- layout('layouts/homeLayout') %>
+    <h1><%= friend.name %></h1>
+    <%= friend.username %>
+    <ul>
+        <% for(let f of friend.followers) { %>
+            <li><%= f.username %></li>
+        <% } %>
+    </ul>
+    <ul>
+        <% for(let f of friend.following) { %>
+            <li><%= f.username %></li>
+        <% } %>
+    </ul>
+    <% if(!isFriend) {%>
+    <form action="/user/requestFriend/<%=friend._id%>" method="post">
+        <button>Request</button>
+    </form>
+    <% } else { %>
+        <h1>Already a friend</h1>
+    <% } %>
+    

@@ -1,0 +1,74 @@
+<%- layout('layouts/homeLayout') %>
+<div class="b" style="display: flex; transition: margin-left 0.3s;">
+    <div id="child1" class="child1" style="height: 100vh; width: 250px; background-color: #efefef; color: black; padding-top: 20px; transition: transform 0.3s;">
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Projects
+            </button>
+            <ul class="dropdown-menu">
+                <% for(let p of teamTask.projects){%>
+                    <li class="dropdown-item">
+               
+                        <a  href="/task/team/project/<%=teamTask._id %>/<%=p._id%>">-@<%= p.name %></a>
+                    </li>
+                <%}%>
+            </ul>
+          </div>
+    </div>
+    
+    <div class="child2" style="flex-grow: 1; padding: 20px; transition: margin-left 0.3s; width: 100%;">
+        <h1><%= teamTask.teamName %></h1>
+    <h2><%= teamTask.teamId %></h2>
+    <%for(let a of teamTask.admin){ %>
+    <h2><%=a.name %></h2>
+    <h2>-@<%=a.username %></h2>
+    <% }%>
+    <h3>GroupMembers</h3>
+    <ul>
+        <% for( let g of teamTask.groupMembers){ %>
+            <li><%= g.name %>- @<%= g.username %></li>
+        <%} %>
+    </ul>
+    <h4>Yet to join!!</h4>
+  
+    <ul>
+        <% for( let g of teamTask.membersUnderRequest){ %>
+            <li><%= g.name %>- @<%= g.username %></li>
+        <%} %>
+    </ul>
+    <h3>Projects</h3>
+    <ul >
+        <% for(let p of teamTask.projects) { %>
+            <li>
+               
+                <a href="/task/team/project/<%=teamTask._id %>/<%=p._id%>">-@<%= p.name %></a>
+            </li>
+        <% } %>
+    <% if(isAdmin) {%>
+        <form action="/task/team/create-project/<%=user._id%>/<%=teamTask._id%>" method="post">
+            <label for="name">Project Name</label>
+            <input type="text" name="name" id="name">
+            <button type="submit">Create</button>
+        </form>
+    <% }%>
+    </div>
+</div>
+<script>
+    const toggleButton = document.getElementById('sidebar-toggler');
+        const sidebar = document.getElementById('child1');
+        const mainContent = document.querySelector('.b');
+
+        toggleButton.addEventListener('click', function() {
+          
+            if (sidebar.style.transform === 'translateX(-100%)') {
+                sidebar.style.transform = 'translateX(0%)';
+                
+            } else {
+                sidebar.style.transform = 'translateX(-100%)';
+                
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+

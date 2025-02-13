@@ -1,0 +1,323 @@
+<% layout('layouts/teamProjectSprintLayout')%>
+<p>Sprint Status: <%= sprint.isSuccessful %></p>
+<%if(sprint._doc.isCompleted){%>
+    <h2>Completed</h2>
+<%}%>
+
+
+
+<% if(sprint.isSuccessful === 1) { %>
+    
+
+    <h3>All Sub Tasks</h3>
+    <ul>
+        <% for(let subTask of subTasks) { %>
+            <% if(subTask.status != 'aborted') { %>
+                <li class="subTask" data-subtask-id="<%= subTask._id %>" 
+                    data-sprint-id="<%= sprint._id %>" 
+                    data-project-id="<%= project._id %>" 
+                    data-team-id="<%= team._id %>">
+                    <%= subTask.name %> - assigned to <%= subTask.assignedTo.name %> - <%= subTask.burnTime.weeks %> W <%= subTask.burnTime.days %> D <%= subTask.burnTime.hours %> Hr
+                </li>
+            <% } %>
+        <% } %>
+    </ul>
+
+    <h3>Create Sub Tasks</h3>
+    <form action="/task/team/project/sprint/create-subTask/<%= team._id %>/<%= project._id %>/<%= sprint._id %>" method="post">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name">
+        <label for="assigningTo">Assigning To</label>
+        <select name="assignedTo" id="assigningTo">
+            <% for(let tm of team.groupMembers) { %>
+                <option value="<%= tm._id %>"><%= tm.name %></option>
+            <% } %>
+            <% for(let tm of team.admin) { %>
+                <option value="<%= tm._id %>"><%= tm.name %></option>
+            <% } %>
+        </select>
+        <label for="dueDate">New Due Date:</label>
+        <input type="datetime-local" id="dueDate" name="dueDate" min="<%= sprint.minDue %>" max="<%= sprint.dueDate %>" required>
+        <button>Create</button>
+    </form>
+
+    <% if(sprint._doc.isPlanned) { %>
+        <form action="/task/team/project/sprint/unset-plan/<%= team._id %>/<%= project._id %>/<%= sprint._id %>?_method=put" method="post">
+            <button>Unset Plan</button>
+        </form>
+    <% } else { %>
+        <form action="/task/team/project/sprint/set-plan/<%= team._id %>/<%= project._id %>/<%= sprint._id %>?_method=put" method="post">
+            <button>Set Plan</button>
+        </form>
+    <% } %>
+
+    <form action="/task/team/project/sprint/delete-sprint/<%= team._id %>/<%= project._id %>/<%= sprint._id %>?_method=delete" method="post">
+        <button>Delete Sprint</button>
+    </form>
+    <button class="changeDue" data-sprint-id="<%= sprint._id %>" 
+        data-project-id="<%= project._id %>" 
+        data-team-id="<%= team._id %>">Extend</button>
+        <h2>Completed Task</h2>
+        <ul>
+            <% for(let subTask of subTasks) { %>
+                <% if(subTask.status == 'accomplished') { %>
+                    <li><%= subTask.name %> - assigned to <%= subTask.assignedTo.name %></li>
+                <% } %>
+            <% } %>
+        </ul>
+        <h2>Working Task</h2>
+        <ul>
+            <% for(let subTask of subTasks) { %>
+                <% if(subTask.status == 'initialised') { %>
+                    <li><%= subTask.name %> - assigned to <%= subTask.assignedTo.name %></li>
+                <% } %>
+            <% } %>
+        </ul>
+        <h2> Tasks To Start</h2>
+        <ul>
+            <% for(let subTask of subTasks) { %>
+                <% if(subTask.status == 'uninitialised') { %>
+                    <li><%= subTask.name %> - assigned to <%= subTask.assignedTo.name %></li>
+                <% } %>
+            <% } %>
+        </ul>
+
+<% } else if(sprint.isSuccessful === 0) { %>
+    <h2>Sprint Unaccomplished</h2>
+    <form action="/task/team/project/sprint/delete-sprint/<%= team._id %>/<%= project._id %>/<%= sprint._id %>?_method=delete" method="post">
+        <button>Abort</button>
+    </form>
+    <button class="changeDue" data-sprint-id="<%= sprint._id %>" 
+        data-project-id="<%= project._id %>" 
+        data-team-id="<%= team._id %>">Extend</button>
+<% } else if(sprint.isSuccessful===2) { %>
+    <h4>Sprint Accomplished</h4>
+    <ul>
+        <% for(let subTask of subTasks) { %>
+            <% if(subTask.status == 'accomplished') { %>
+                <li><%= subTask.name %> - assigned to <%= subTask.assignedTo.name %></li>
+            <% } %>
+        <% } %>
+    </ul>
+    <button class="changeDue" data-sprint-id="<%= sprint._id %>" 
+        data-project-id="<%= project._id %>" 
+        data-team-id="<%= team._id %>">Extend</button>
+    <form action="/task/team/project/sprint/delete-sprint/<%= team._id %>/<%= project._id %>/<%= sprint._id %>?_method=delete" method="post">
+        <button>Delete</button>
+    </form>
+<% } %>
+
+<!-- Right-Click Context Menu -->
+<div id="subtask-context-menu" class="context-menu hidden">
+    <ul>
+        <li id="edit-subtask">Edit</li>
+        <li id="delete-subtask">Delete</li>
+    </ul>
+</div>
+
+<!-- Edit Subtask Modal -->
+<div class="modal fade" id="editSubtaskModal" tabindex="-1" aria-labelledby="editSubtaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editSubtaskModalLabel">Edit Subtask</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editSubtaskForm" action="" method="post">
+                    <input type="hidden" id="edit-subtask-id" name="subtaskId">
+                    
+                    <label for="edit-subtask-name">Subtask Name</label>
+                    <input type="text" id="edit-subtask-name" name="name" class="form-control" required>
+
+                    <label for="edit-assignedTo">Assign To</label>
+                    <select name="assignedTo" id="edit-assignedTo" class="form-control" required>
+                        <% for (let member of team.groupMembers) { %>
+                            <option value="<%= member._id %>"><%= member.name %></option>
+                        <% } %>
+                        <% for (let member of team.admin) { %>
+                            <option value="<%= member._id %>"><%= member.name %></option>
+                        <% } %>
+                    </select>
+
+                    <label for="edit-dueDate">Due Date</label>
+                    <input type="datetime-local" id="edit-dueDate" name="dueDate" class="form-control" required>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const menu = document.createElement("div");
+        menu.id = "contextMenu";
+        menu.style.position = "absolute";
+        menu.style.display = "none";
+        menu.style.background = "white";
+        menu.style.border = "1px solid #ccc";
+        menu.style.padding = "5px";
+        menu.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.2)";
+        document.body.appendChild(menu);
+  
+        const dueDateForm = document.createElement("form");
+        dueDateForm.id = "dueDateForm";
+        dueDateForm.style.position = "absolute";
+        dueDateForm.style.display = "none";
+        dueDateForm.style.background = "white";
+        dueDateForm.style.border = "1px solid #ccc";
+        dueDateForm.style.padding = "10px";
+        dueDateForm.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.2)";
+        document.body.appendChild(dueDateForm);
+  
+        let selectedSubTaskId = null;
+        let selectedSprintId = null;
+        let selectedProjectId = null;
+        let selectedTeamId = null;
+  
+      
+        function addRightClickListener(selector) {
+            document.querySelectorAll(selector).forEach((subTask) => {
+                subTask.addEventListener("contextmenu", function (event) {
+                    event.preventDefault();
+          
+                    selectedSubTaskId = this.dataset.subtaskId;
+                    selectedSprintId = this.dataset.sprintId;
+                    selectedProjectId = this.dataset.projectId;
+                    selectedTeamId = this.dataset.teamId;
+          
+                    menu.style.left = `${event.pageX}px`;
+                    menu.style.top = `${event.pageY}px`;
+                    menu.style.display = "block";
+          
+                    menu.innerHTML = "";
+          
+                  
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.innerText = "Delete";
+                    deleteBtn.style.display = "block";
+                    deleteBtn.style.width = "100%";
+                    deleteBtn.style.padding = "5px";
+                    deleteBtn.style.cursor = "pointer";
+          
+                    deleteBtn.addEventListener("click", function () {
+                        if (selectedSubTaskId) {
+                            window.location.href = `/task/team/project/sprint/delete-subTask/${selectedTeamId}/${selectedProjectId}/${selectedSprintId}/${selectedSubTaskId}`;
+                        }
+                    });
+          
+                  
+                    const changeDueDateBtn = document.createElement("button");
+                changeDueDateBtn.innerText = "Change Due Date";
+                changeDueDateBtn.style.display = "block";
+                changeDueDateBtn.style.width = "100%";
+                changeDueDateBtn.style.padding = "5px";
+                changeDueDateBtn.style.cursor = "pointer";
+
+                changeDueDateBtn.addEventListener("click", function (event) {
+    menu.style.display = "none";  
+
+    // ✅ Remove any existing forms before creating a new one
+    document.querySelectorAll(".changeDueForm").forEach(form => form.remove());
+
+    // ✅ Create a new form element
+    let form = document.createElement("form");
+    form.classList.add("changeDueForm");
+    form.style.position = "absolute";
+    form.style.left = `${event.pageX + 10}px`;  
+    form.style.top = `${event.pageY + 20}px`;
+    form.style.background = "white";
+    form.style.border = "1px solid #ccc";
+    form.style.padding = "10px";
+    form.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.2)";
+
+    form.method = "GET";  // ✅ Set method to POST
+    form.action = `/task/team/project/sprint/subTask-change-due-date/${selectedTeamId}/${selectedProjectId}/${selectedSprintId}/${selectedSubTaskId}`; // ✅ Correct action URL
+
+    form.innerHTML = `
+        <label for="dueDate">New Due Date:</label>
+        <input type="datetime-local" id="dueDate" name="newDueDate" required>
+        <button type="submit">Submit</button>
+    `;
+
+    // Append the form to the body
+    document.body.appendChild(form);
+
+    
+    document.addEventListener("click", function (outsideClick) {
+        if (!form.contains(outsideClick.target) && !changeDueDateBtn.contains(outsideClick.target)) {
+            form.remove();
+        }
+    });
+});
+
+                    menu.appendChild(deleteBtn);
+                    menu.appendChild(changeDueDateBtn);
+                });
+            });
+        }
+  
+ 
+        addRightClickListener(".subTask");
+        addRightClickListener(".unaccomplished");
+  
+      
+        document.addEventListener("click", function (event) {
+            if (!event.target.closest("#contextMenu") && !event.target.closest("#dueDateForm")) {
+                menu.style.display = "none";
+                dueDateForm.style.display = "none";
+            }
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".changeDue").forEach(button => {
+        button.addEventListener("click", function (event) {
+            event.preventDefault();  
+
+            const sprintId = this.dataset.sprintId;
+            const projectId = this.dataset.projectId;
+            const teamId = this.dataset.teamId;
+
+           
+            document.querySelectorAll(".changeDueForm").forEach(form => form.remove());
+
+           
+            let form = document.createElement("form");
+            form.classList.add("changeDueForm");
+            form.style.position = "absolute";
+            form.style.left = `${event.pageX + 10}px`;  
+            form.style.top = `${event.pageY + 20}px`;
+            form.style.background = "white";
+            form.style.border = "1px solid #ccc";
+            form.style.padding = "10px";
+            form.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.2)";
+
+            form.method = "POST";  // ✅ Set method to POST
+            form.action = `/task/team/project/sprint/change-dueDate/${teamId}/${projectId}/${sprintId}`; // ✅ Correct action
+
+            form.innerHTML = `
+                <label for="dueDate">New Due Date:</label>
+                <input type="datetime-local" id="dueDate" name="newDueDate" required>
+                <button type="submit">Submit</button>
+            `;
+
+            document.body.appendChild(form);
+
+            // Hide the form when clicking outside
+            document.addEventListener("click", function (outsideClick) {
+                if (!form.contains(outsideClick.target) && !button.contains(outsideClick.target)) {
+                    form.remove();
+                }
+            });
+        });
+    });
+});
+
+
+</script>

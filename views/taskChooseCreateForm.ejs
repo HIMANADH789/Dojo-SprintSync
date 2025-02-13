@@ -1,0 +1,12 @@
+<%- layout('layouts/homeLayout') %>
+    <a href="/"><button>Back</button></a>
+    <form action="/task/createChooseType" method="post">
+        <label for="">Choose type of task</label>
+        <input type="radio" id="personal" name="choice" value="personal">
+        <label for="personal">Personal task</label>
+        <input type="radio" id="group" name="choice" value="group">
+        <label for="group">Group task</label>
+        <button>Submit</button>
+
+        
+    </form>

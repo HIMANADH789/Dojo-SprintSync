@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/personalTask.css"> 
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    
+   
+
+    
+    
+</head>
+<body>
+    
+    <%- include('../partials/navbar') %>
+    <% if (success && success.length > 0) { %>
+        <div class="alert alert-success">
+            <%= success %>
+            <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+        </div>
+    <% } %>
+    <% if (error && error.length > 0) { %>
+        <div class="alert alert-error">
+            <%= error %>
+            <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+        </div>
+    <% } %>
+    
+    <%- body %>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+</body>
+</html>

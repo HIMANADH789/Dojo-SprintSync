@@ -1,0 +1,101 @@
+/* Enhanced Sprint Boxes */
+
+
+.sprint-box {
+    
+    width: 80vw;
+    margin-top: 5px;
+    border: 2px solid #ccc;
+    padding: 15px;
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+}
+
+.box{
+    display:flex;
+    justify-content: space-between;
+}
+
+p{
+    display:inline;
+}
+
+.sprint-box:hover {
+    background-color: #f1f1f1;
+}
+
+.sprint-box h3 {
+    font-size: 18px;
+    color: #333;
+}
+
+#backlog {
+    width: 300px;
+    min-height: 200px;
+    margin-top: 20px;
+    padding: 15px;
+    border: 2px dashed #888;
+    background-color: #fafafa;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Subtask Styling */
+#backlog li, .sprint-box li {
+    margin: 5px 0;
+    padding: 10px;
+    background-color: #e2e2e2;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#backlog li:hover, .sprint-box li:hover {
+    background-color: #d0d0d0;
+}
+
+.sprint-box li {
+    background-color: #d9d9d9;
+    margin: 5px;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+.sprint-box li:active {
+    background-color: #b0b0b0;
+}
+
+/* Tooltip Styling */
+.tooltip-inner {
+    max-width: 250px;
+    font-size: 12px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 3px;
+}
+
+.tooltip-arrow {
+    border-top-color: #333 !important;
+}
+
+.hidden {
+    display: none;
+}
+
+.set-plan{
+    display:inline
+}
+
+#subtask-context-menu {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 8px;
+    z-index: 1000;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+
+

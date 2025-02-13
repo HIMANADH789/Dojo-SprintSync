@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/personalTask.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/personalTaskBacklog.css">
+    
+</head>
+<body>
+
+    <% if (success && success.length > 0) { %>
+        <div class="alert alert-success">
+            <%= success %>
+            <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+        </div>
+    <% } %>
+
+    <% if (error && error.length > 0) { %>
+        <div class="alert alert-error">
+            <%= error %>
+            <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+        </div>
+    <% } %>
+
+    <%- include('../partials/navbar') %>
+
+    <div class="b" style="display: flex; transition: margin-left 0.3s;">
+
+
+        <div id="child1" class="child1" style="height: 100vh; width: 250px; background-color: #efefef; color: black; padding-top: 20px; transition: transform 0.3s;">
+            <div class="btn-group" style="width: 100%; padding: 10px;">
+
+               
+
+                <button><a href="/task/personal/backlogs/<%=user._id%>/<%=task._id%>">Backlogs</a></button>
+               
+            </div>
+        </div>
+
+      
+        <div class="child2" style="flex-grow: 1; padding: 20px; transition: margin-left 0.3s; width: 100%;">
+            <%- body %>
+        </div>
+    </div>
+
+    <script>
+        const toggleButton = document.getElementById('sidebar-toggler');
+        const sidebar = document.getElementById('child1');
+        const mainContent = document.querySelector('.b');
+        
+        toggleButton.addEventListener('click', function() {
+            if (sidebar.style.transform === 'translateX(-100%)') {
+                sidebar.style.transform = 'translateX(0%)';
+            } else {
+                sidebar.style.transform = 'translateX(-100%)';
+            }
+        });
+    </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Include Bootstrap JavaScript (Ensure this comes after jQuery) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+</body>
+</html>

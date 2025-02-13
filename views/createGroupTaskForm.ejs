@@ -1,0 +1,15 @@
+<%- layout('layouts/homeLayout') %>
+    <a href="/task/createChooseType"><button>Back</button></a>
+    <form action="/task/createGroup" method="post">
+        <label for="taskName">Task Name</label>
+        <input type="text" id="taskname" name="teamName">
+        <label for="taskId">Task Id</label>
+        <input type="text" id="taskId" name="teamId">
+        <label for="">Invite</label>
+        <label for="teamMate1">Team Mate-1</label>
+        <input type="text" id="teamMate1" name="teamMate1">
+        <label for="teamMate2">Team Mate-2</label>
+        <input type="text" id="teamMate2" name="teamMate2">
+        <button>Submit</button>
+    </form>
+

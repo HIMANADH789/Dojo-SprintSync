@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/personalTask.css">
+    <link rel="stylesheet" href="/css/teamProjectBacklog.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    
+     
+      
+</head>
+<body>
+
+    <% if (success && success.length > 0) { %>
+        <div class="alert alert-success">
+            <%= success %>
+            <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+        </div>
+    <% } %>
+
+    <% if (error && error.length > 0) { %>
+        <div class="alert alert-error">
+            <%= error %>
+            <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+        </div>
+    <% } %>
+
+    <%- include('../partials/navbar') %>
+
+    <div class="b" style="display: flex; transition: margin-left 0.3s;">
+
+
+        <div id="child1" class="child1" style="height: 100vh; width: 250px; background-color: #efefef; color: black; padding-top: 20px; transition: transform 0.3s;">
+            <div class="btn-group" style="width: 100%; padding: 10px;">
+                <%if(isAdmin){%>
+                <form action="/task/team/project/backlogs/<%=team._id%>/<%=project._id%>">
+                    <button type="submit" class="btn btn-primary">Plan your Task</button>
+                </form>
+                <%}%>
+                <button><a href="/task/team/project/your-subTasks/<%=team._id%>/<%=project._id%>">Your Backlogs</a></button>
+            
+            </div>
+        </div>
+
+      
+        <div class="child2" style="flex-grow: 1; padding: 20px; transition: margin-left 0.3s; width: 100%;">
+            <%- body %>
+        </div>
+    </div>
+
+    <script>
+        const toggleButton = document.getElementById('sidebar-toggler');
+        const sidebar = document.getElementById('child1');
+        const mainContent = document.querySelector('.b');
+        
+        toggleButton.addEventListener('click', function() {
+            if (sidebar.style.transform === 'translateX(-100%)') {
+                sidebar.style.transform = 'translateX(0%)';
+            } else {
+                sidebar.style.transform = 'translateX(-100%)';
+            }
+        });
+    </script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+
+</body>
+</html>

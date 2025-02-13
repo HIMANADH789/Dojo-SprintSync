@@ -1,0 +1,272 @@
+<%- layout('layouts/personalTaskSprintTemplateLayout') %>
+<%if(sprint._doc.isCompleted){%>
+    <h2>Completed</h2>
+<%}%>
+
+<h1>
+    <%= sprint.name%>
+</h1>
+
+<% if(sprint.isSuccessful === 1) { %>
+
+<ul>
+    <% for(let s of tasks){ %>
+        <%if(s.status!='aborted'){%>
+        <li class="subTask" data-subtask-id="<%= s._id %>" 
+        data-sprint-id="<%= sprint._id %>" 
+        data-user-id="<%= user._id %>" 
+        data-task-id="<%= tid %>"><%=s.name%>- <%=s.burnTime.weeks%>W <%=s.burnTime.days%>D <%=s.burnTime.hours%></li>
+    <%}}%>
+</ul>
+<form action="/task/personal/add-subtask/<%=user._id%>/<%=tid%>/<%=sprint._id%>" method="post">
+    <label for="name">Name of Subtask</label>
+    <input type="text" id="name" name="name">
+    <label for="dueDate">Due Date</label>
+    <input type="datetime-local" min="<%= sprint.minDue %>" max="<%= sprint.dueDate %>"id="dueDate" name="dueDate">
+    <button>Add</button>
+</form>
+<% if(sprint._doc.isPlanned) { %>
+    <form action="/task/personal/sprint/unset-plan/<%=user._id%>/<%= tid %>/<%= sprint._id %>?_method=put" method="post">
+        <button>Unset Plan</button>
+    </form>
+<% } else { %>
+    <form action="/task/personal/sprint/set-plan/<%=user._id%>/<%= tid %>/<%= sprint._id %>?_method=put" method="post">
+        <button>Set Plan</button>
+    </form>
+<% } %>
+<h2>Completed Task</h2>
+        <ul>
+            <% for(let subTask of tasks) { %>
+                <% if(subTask.status == 'accomplished') { %>
+                    <li><%= subTask.name %> </li>
+                <% } %>
+            <% } %>
+        </ul>
+        <h2>Working Task</h2>
+        <ul>
+            <% for(let subTask of tasks) { %>
+                <% if(subTask.status == 'initialised') { %>
+                    <li><%= subTask.name %> - assigned to <%= subTask.assignedTo.name %></li>
+                <% } %>
+            <% } %>
+        </ul>
+        <h2> Tasks To Start</h2>
+        <ul>
+            <% for(let subTask of tasks) { %>
+                <% if(subTask.status == 'uninitialised') { %>
+                    <li><%= subTask.name %> </li>
+                <% } %>
+            <% } %>
+        </ul>
+        <ul>
+        <% for(let subTask of tasks) { %>
+            <% if(subTask.status == 'accomplished') { %>
+                <li><%= subTask.name %> </li>
+            <% } %>
+        <% } %>
+    </ul>
+
+<%} else if(sprint.isSuccessful === 0) { %>
+    <h2>Sprint Unaccomplished</h2>
+    
+<% } else if(sprint.isSuccessful===2) { %>
+    <h4>Sprint Accomplished</h4>
+    <ul>
+        <% for(let subTask of tasks) { %>
+            <% if(subTask.status == 'accomplished') { %>
+                <li><%= subTask.name %> </li>
+            <% } %>
+        <% } %>
+    </ul>
+    
+<% } %>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const menu = document.createElement("div");
+        menu.id = "contextMenu";
+        menu.style.position = "absolute";
+        menu.style.display = "none";
+        menu.style.background = "white";
+        menu.style.border = "1px solid #ccc";
+        menu.style.padding = "5px";
+        menu.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.2)";
+        document.body.appendChild(menu);
+  
+        const dueDateForm = document.createElement("form");
+        dueDateForm.id = "dueDateForm";
+        dueDateForm.style.position = "absolute";
+        dueDateForm.style.display = "none";
+        dueDateForm.style.background = "white";
+        dueDateForm.style.border = "1px solid #ccc";
+        dueDateForm.style.padding = "10px";
+        dueDateForm.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.2)";
+        document.body.appendChild(dueDateForm);
+  
+        let selectedSubTaskId = null;
+        let selectedSprintId = null;
+        let selectedProjectId = null;
+        let selectedTeamId = null;
+  
+      
+        function addRightClickListener(selector) {
+            document.querySelectorAll(selector).forEach((subTask) => {
+                subTask.addEventListener("contextmenu", function (event) {
+                    event.preventDefault();
+          
+                    selectedSubTaskId = this.dataset.subtaskId;
+                    selectedSprintId = this.dataset.sprintId;
+                    selectedProjectId = this.dataset.userId;
+                    selectedTeamId = this.dataset.taskId;
+          
+                    menu.style.left = `${event.pageX}px`;
+                    menu.style.top = `${event.pageY}px`;
+                    menu.style.display = "block";
+          
+                    menu.innerHTML = "";
+          
+                  
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.innerText = "Delete";
+                    deleteBtn.style.display = "block";
+                    deleteBtn.style.width = "100%";
+                    deleteBtn.style.padding = "5px";
+                    deleteBtn.style.cursor = "pointer";
+          
+                    deleteBtn.addEventListener("click", function () {
+    if (selectedSubTaskId) {
+        // Create a new form for the delete action
+        const form = document.createElement('form');
+        form.method = 'POST';  // POST method for delete
+        form.action = `/task/personal/sprint/subTask-delete/${selectedTeamId}/${selectedProjectId}/${selectedSprintId}/${selectedSubTaskId}`; // Correct delete URL
+
+        // You can add a CSRF token or other hidden inputs if needed
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_csrf';
+        csrfToken.value = 'your-csrf-token-here';  // Replace with actual CSRF token
+        form.appendChild(csrfToken);
+
+        // Append the form to the body and submit it
+        document.body.appendChild(form);
+        form.submit();
+    }
+});
+
+          
+                  
+const changeDueDateBtn = document.createElement("button");
+changeDueDateBtn.innerText = "Change Due Date";
+changeDueDateBtn.style.display = "block";
+changeDueDateBtn.style.width = "100%";
+changeDueDateBtn.style.padding = "5px";
+changeDueDateBtn.style.cursor = "pointer";
+
+changeDueDateBtn.addEventListener("click", function (event) {
+    menu.style.display = "none";  
+
+    // ✅ Remove any existing forms before creating a new one
+    document.querySelectorAll(".changeDueForm").forEach(form => form.remove());
+
+    // ✅ Create a new form element
+    let form = document.createElement("form");
+    form.classList.add("changeDueForm");
+    form.style.position = "absolute";
+    form.style.left = `${event.pageX + 10}px`;  
+    form.style.top = `${event.pageY + 20}px`;
+    form.style.background = "white";
+    form.style.border = "1px solid #ccc";
+    form.style.padding = "10px";
+    form.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.2)";
+
+    form.method = "GET";  // Use POST for submitting data
+    form.action = `/task/personal/sprint/subTask-changeDueDate/${selectedTeamId}/${selectedProjectId}/${selectedSprintId}/${selectedSubTaskId}`; // Correct action URL
+
+    form.innerHTML = `
+        <label for="dueDate">New Due Date:</label>
+        <input type="datetime-local" id="dueDate" name="newDueDate" required>
+        <button type="submit">Submit</button>
+    `;
+
+    // Append the form to the body
+    document.body.appendChild(form);
+
+    // Add event listener to the form submission
+    
+
+    // Hide the form when clicking outside
+    document.addEventListener("click", function (outsideClick) {
+        if (!form.contains(outsideClick.target) && !changeDueDateBtn.contains(outsideClick.target)) {
+            form.remove();
+        }
+    });
+});
+
+
+                    menu.appendChild(deleteBtn);
+                    menu.appendChild(changeDueDateBtn);
+                });
+            });
+        }
+  
+ 
+        addRightClickListener(".subTask");
+        addRightClickListener(".unaccomplished");
+  
+      
+        document.addEventListener("click", function (event) {
+            if (!event.target.closest("#contextMenu") && !event.target.closest("#dueDateForm")) {
+                menu.style.display = "none";
+                dueDateForm.style.display = "none";
+            }
+        });
+    });
+
+//     document.addEventListener("DOMContentLoaded", function () {
+//     document.querySelectorAll(".changeDue").forEach(button => {
+//         button.addEventListener("click", function (event) {
+//             event.preventDefault();  
+
+//             const sprintId = this.dataset.sprintId;
+//             const projectId = this.dataset.projectId;
+//             const teamId = this.dataset.teamId;
+
+           
+//             document.querySelectorAll(".changeDueForm").forEach(form => form.remove());
+
+           
+//             let form = document.createElement("form");
+//             form.classList.add("changeDueForm");
+//             form.style.position = "absolute";
+//             form.style.left = `${event.pageX + 10}px`;  
+//             form.style.top = `${event.pageY + 20}px`;
+//             form.style.background = "white";
+//             form.style.border = "1px solid #ccc";
+//             form.style.padding = "10px";
+//             form.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.2)";
+
+//             form.method = "POST";  // ✅ Set method to POST
+//             form.action = `/task/team/project/sprint/change-dueDate/${teamId}/${projectId}/${sprintId}`; // ✅ Correct action
+
+//             form.innerHTML = `
+//                 <label for="dueDate">New Due Date:</label>
+//                 <input type="datetime-local" id="dueDate" name="newDueDate" required>
+//                 <button type="submit">Submit</button>
+//             `;
+
+//             document.body.appendChild(form);
+
+//             // Hide the form when clicking outside
+//             document.addEventListener("click", function (outsideClick) {
+//                 if (!form.contains(outsideClick.target) && !button.contains(outsideClick.target)) {
+//                     form.remove();
+//                 }
+//             });
+//         });
+//     });
+// });
+
+
+</script>
+
+

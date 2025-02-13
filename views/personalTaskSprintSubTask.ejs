@@ -1,0 +1,22 @@
+<%- layout('layouts/personalTaskSprintTemplateLayout') %>
+<h2>Working Tasks</h2>
+<% for(let subTask of tasks){ %>
+    <% if(subTask.status=='initialised'){%>
+        <%= subTask.name%>- <%=subTask.burnTime%>
+        <form action="/task/personal/sprint/subTask-submit/<%=user._id%>/<%=tid%>/<%=sprint._id%>/<%=subTask._id%>" method="post">
+            <button>Done</button>
+        </form>
+    <%}}%>
+<h2>Works to do</h2>
+<% for(let subTask of tasks){ %>
+    <% if(subTask.status=='uninitialised'){%>
+        <%= subTask.name%>- <%=subTask.burnTime.weeks%>W <%=subTask.burnTime.days%>D <%=subTask.burnTime.hours%>H
+        <form action="/task/personal/sprint/subTask-start/<%=user._id%>/<%=tid%>/<%=sprint._id%>/<%=subTask._id%>" method="post">
+            <button>Start</button>
+        </form>
+    <%}}%>
+<h2>Completed Sub Tasks</h2>
+<% for(let subTask of tasks){ %>
+    <% if(subTask.status=='accomplished'){%>
+        <%= subTask.name%>- <%=subTask.burnTime%>
+    <%}}%>

@@ -1,0 +1,10 @@
+<%- layout('layouts/homeLayout') %>
+    <h1>Friends</h1>
+    <h2>Followers</h2>
+    <% for(let f of followers){ %>
+        <li><%=f.username %></li>
+    <%} %>
+    <h2>Following</h2>
+    <% for(let f of following){ %>
+        <li><%=f.username %></li>
+    <%} %>
