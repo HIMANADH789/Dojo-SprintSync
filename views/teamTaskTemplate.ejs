@@ -1,74 +1,86 @@
 <%- layout('layouts/homeLayout') %>
-<div class="b" style="display: flex; transition: margin-left 0.3s;">
-    <div id="child1" class="child1" style="height: 100vh; width: 250px; background-color: #efefef; color: black; padding-top: 20px; transition: transform 0.3s;">
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Projects
-            </button>
-            <ul class="dropdown-menu">
-                <% for(let p of teamTask.projects){%>
-                    <li class="dropdown-item">
-               
-                        <a  href="/task/team/project/<%=teamTask._id %>/<%=p._id%>">-@<%= p.name %></a>
+
+<div class="container-fluid">
+    <div class="row">
+        
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar p-3 border-end" style="transition: transform 0.3s;">
+            <button id="sidebar-toggler" class="btn btn-dark d-block d-md-none mb-3">☰</button>
+            <h4 class="text-center text-primary">Projects</h4>
+            <ul class="nav flex-column">
+                <% for(let p of teamTask.projects) { %>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/task/team/project/<%= teamTask._id %>/<%= p._id %>">
+                            📂 @<%= p.name %>
+                        </a>
                     </li>
-                <%}%>
+                <% } %>
             </ul>
-          </div>
-    </div>
-    
-    <div class="child2" style="flex-grow: 1; padding: 20px; transition: margin-left 0.3s; width: 100%;">
-        <h1><%= teamTask.teamName %></h1>
-    <h2><%= teamTask.teamId %></h2>
-    <%for(let a of teamTask.admin){ %>
-    <h2><%=a.name %></h2>
-    <h2>-@<%=a.username %></h2>
-    <% }%>
-    <h3>GroupMembers</h3>
-    <ul>
-        <% for( let g of teamTask.groupMembers){ %>
-            <li><%= g.name %>- @<%= g.username %></li>
-        <%} %>
-    </ul>
-    <h4>Yet to join!!</h4>
-  
-    <ul>
-        <% for( let g of teamTask.membersUnderRequest){ %>
-            <li><%= g.name %>- @<%= g.username %></li>
-        <%} %>
-    </ul>
-    <h3>Projects</h3>
-    <ul >
-        <% for(let p of teamTask.projects) { %>
-            <li>
-               
-                <a href="/task/team/project/<%=teamTask._id %>/<%=p._id%>">-@<%= p.name %></a>
-            </li>
-        <% } %>
-    <% if(isAdmin) {%>
-        <form action="/task/team/create-project/<%=user._id%>/<%=teamTask._id%>" method="post">
-            <label for="name">Project Name</label>
-            <input type="text" name="name" id="name">
-            <button type="submit">Create</button>
-        </form>
-    <% }%>
+        </nav>
+
+        <main id="main-content" class="col-md-9 ms-sm-auto col-lg-10 p-4">
+            <h1 class="text-primary"><%= teamTask.teamName %></h1>
+            <h3 class="text-secondary">Team ID: <%= teamTask.teamId %></h3>
+
+            <h4 class="text-dark mt-4">Admins</h4>
+            <ul class="list-group">
+                <% for(let a of teamTask.admin) { %>
+                    <li class="list-group-item">
+                        <strong><%= a.name %></strong> - @<%= a.username %>
+                    </li>
+                <% } %>
+            </ul>
+
+      
+            <h4 class="text-dark mt-4">Group Members</h4>
+            <ul class="list-group">
+                <% for(let g of teamTask.groupMembers) { %>
+                    <li class="list-group-item">
+                        <strong><%= g.name %></strong> - @<%= g.username %>
+                    </li>
+                <% } %>
+            </ul>
+
+
+            <h4 class="text-danger mt-4"> Yet to Join</h4>
+            <ul class="list-group">
+                <% for(let g of teamTask.membersUnderRequest) { %>
+                    <li class="list-group-item">
+                        <strong><%= g.name %></strong> - @<%= g.username %>
+                    </li>
+                <% } %>
+            </ul>
+
+     
+            <h3 class="text-success mt-4">Projects</h3>
+            <ul class="list-group">
+                <% for(let p of teamTask.projects) { %>
+                    <li class="list-group-item">
+                        <a href="/task/team/project/<%= teamTask._id %>/<%= p._id %>" class="text-decoration-none text-dark">📂 @<%= p.name %></a>
+                    </li>
+                <% } %>
+            </ul>
+            <% if(isAdmin) { %>
+                <div class="card mt-4 p-3 shadow-sm">
+                    <h4 class="text-primary">Create a New Project</h4>
+                    <form action="/task/team/create-project/<%= user._id %>/<%= teamTask._id %>" method="post">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Project Name</label>
+                            <input type="text" name="name" id="name" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Create</button>
+                    </form>
+                </div>
+            <% } %>
+        </main>
     </div>
 </div>
+
 <script>
-    const toggleButton = document.getElementById('sidebar-toggler');
-        const sidebar = document.getElementById('child1');
-        const mainContent = document.querySelector('.b');
+    document.getElementById('sidebar-toggler').addEventListener('click', function() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.style.transform = sidebar.style.transform === 'translateX(-100%)' ? 'translateX(0%)' : 'translateX(-100%)';
+    });
+</script>
 
-        toggleButton.addEventListener('click', function() {
-          
-            if (sidebar.style.transform === 'translateX(-100%)') {
-                sidebar.style.transform = 'translateX(0%)';
-                
-            } else {
-                sidebar.style.transform = 'translateX(-100%)';
-                
-            }
-        });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="/js/bootstrap.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>

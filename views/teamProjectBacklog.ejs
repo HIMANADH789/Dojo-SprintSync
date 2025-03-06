@@ -10,8 +10,6 @@
     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createSubtaskModal">Create Subtask</button>
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createSprintModal">Create Sprint</button>
 
-
-<!-- Create Sprint Modal -->
 <div class="modal fade" id="createSprintModal" tabindex="-1" aria-labelledby="createSprintModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -70,7 +68,7 @@
     </div>
 </div>
 
-<!-- Create Subtask Modal -->
+
 <div class="modal fade" id="createSubtaskModal" tabindex="-1" aria-labelledby="createSubtaskModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -102,12 +100,10 @@
     </div>
 </div>
 
-<!-- Sprint Containers -->
-<!-- Sprint Toggler -->
-<!-- Sprint Toggler -->
+
 <button id="toggle-sprints">Show Sprints</button>
 
-<!-- Sprints Container (Initially Hidden) -->
+
 <div class="sprints-container hidden">
     <% for (let sprint of project.sprints) { %>
         <div class="sprint-box hidden" id="sprint-<%= sprint._id %>" ondrop="drop(event)" ondragover="allowDrop(event)">
@@ -125,7 +121,6 @@
             <% } %>
 
 
-            <!-- SubTasks Toggler -->
             <button class="toggle-subtasks">Show SubTasks</button>
             
             <% if (sprint.isCompleted) { %>
@@ -182,11 +177,11 @@
 
 
 
-<!-- Backlog Container -->
+
 <h2>Backlog</h2>
 <ul id="backlog" class="list-group w-100"ondrop="drop(event)" ondragover="allowDrop(event)">
     <% for (let subTask of project.subTasks) { %>
-        <% if (!subTask.sprint) { %>  <!-- Only show subtasks without sprint assigned -->
+        <% if (!subTask.sprint) { %>  
             <li id="subtask-<%= subTask._id %>" class="subtask subTasklist-group-item border-bottom py-3" draggable="true" ondragstart="drag(event)">
                 <%= subTask.name %> - <%= subTask.assignedTo.name %> <%=subTask.burnTime.weeks%>W <%=subTask.burnTime.days%>D <%=subTask.burnTime.hours%>
                 <button class="subtask-view btn btn-info"
@@ -206,7 +201,7 @@
     <% } %>
 </ul>
 
-<!-- Subtask View Modal -->
+
 <div class="modal fade" id="subtaskViewModal" tabindex="-1" aria-labelledby="subtaskViewModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -227,7 +222,7 @@
     </div>
 </div>
 
-<!-- Edit Subtask Modal -->
+
 <div class="modal fade" id="editSubtaskModal" tabindex="-1" aria-labelledby="editSubtaskModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -283,13 +278,13 @@
             sprintsVisible = !sprintsVisible;
             sprintsContainer.classList.toggle("hidden", !sprintsVisible);
             
-            // Hide all sprint boxes if hiding sprints
+
             sprintBoxes.forEach(sprint => sprint.classList.toggle("hidden", !sprintsVisible));
     
             toggleSprintsButton.textContent = sprintsVisible ? "Hide Sprints" : "Show Sprints";
         });
     
-        // Handle SubTasks toggling inside each sprint
+        
         document.querySelectorAll(".sprint-box").forEach((sprintBox) => {
             const subTaskButton = sprintBox.querySelector(".toggle-subtasks");
             const subTasksList = sprintBox.querySelector(".subTasks");
@@ -307,25 +302,25 @@
     const toggleSprintsButton = document.querySelector("#toggle-sprints");
     let sprintsVisible = false;
 
-    // Toggle Sprint Container Visibility
+ 
     toggleSprintsButton.addEventListener("click", function () {
         sprintsVisible = !sprintsVisible;
         sprintsContainer.classList.toggle("hidden", !sprintsVisible);
         toggleSprintsButton.textContent = sprintsVisible ? "Hide Sprints" : "Show Sprints";
     });
 
-    // Handle SubTasks Toggling
+   
     document.querySelectorAll(".toggle-subtasks").forEach(button => {
         button.addEventListener("click", function () {
             const sprintId = this.dataset.sprintId;
             const subtasksBox = document.querySelector(`#subtasks-box-${sprintId}`);
 
-            // Hide all other subtasks boxes first
+            
             document.querySelectorAll(".subtasks-box").forEach(box => {
                 if (box.id !== subtasksBox.id) box.classList.add("hidden");
             });
 
-            // Toggle clicked sprint's subtasks
+         
             subtasksBox.classList.toggle("hidden");
             this.textContent = subtasksBox.classList.contains("hidden") ? "Show SubTasks" : "Hide SubTasks";
         });

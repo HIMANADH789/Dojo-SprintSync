@@ -1,20 +1,28 @@
-
 <%- layout('layouts/personalTaskTemplateLayout') %>
 
+<div class="container mt-4">
+    <div class="card p-4 shadow-sm">
+        <h2 class="text-primary"><%= user.name %></h2>
+        <h1 class="text-dark"><%= task.taskName %></h1>
+        <h2 class="text-muted">Task ID: <%= task.taskId %></h2>
+        
+        <h2 class="mt-4">Sprints</h2>
+        <ul class="list-group mb-4">
+            <% for(let sprint of task.sprints){ %>
+                <li class="list-group-item"><%= sprint.name %></li>
+            <% } %>
+        </ul>
 
-        <h2><%=user.name%></h2>
-    <h1><%=task.taskName%></h1>
-    <h2><%=task.taskId%></h2>
-<h2>Sprints</h2>
-    <% for(let sprint of task.sprints){ %>
-        <li><%=sprint.name%></li>
-    <%}%>
-
-    <form action="/task/personal/add-sprint/<%=user._id%>/<%=task._id%>" method="post">
-        <label for="name">Name of Sprint</label>
-        <input type="text" id="name" name="name">
-        <label for="dueDate">Due Date</label>
-        <input type="datetime-local" id="dueDate" name="dueDate">
-        <button>Add</button>
-    </form>
-    
+        <form action="/task/personal/add-sprint/<%= user._id %>/<%= task._id %>" method="post" class="needs-validation">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name of Sprint</label>
+                <input type="text" id="name" name="name" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="dueDate" class="form-label">Due Date</label>
+                <input type="datetime-local" id="dueDate" name="dueDate" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+    </div>
+</div>

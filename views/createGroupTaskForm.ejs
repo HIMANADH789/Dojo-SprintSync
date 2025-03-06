@@ -1,15 +1,61 @@
 <%- layout('layouts/homeLayout') %>
-    <a href="/task/createChooseType"><button>Back</button></a>
-    <form action="/task/createGroup" method="post">
-        <label for="taskName">Task Name</label>
-        <input type="text" id="taskname" name="teamName">
-        <label for="taskId">Task Id</label>
-        <input type="text" id="taskId" name="teamId">
-        <label for="">Invite</label>
-        <label for="teamMate1">Team Mate-1</label>
-        <input type="text" id="teamMate1" name="teamMate1">
-        <label for="teamMate2">Team Mate-2</label>
-        <input type="text" id="teamMate2" name="teamMate2">
-        <button>Submit</button>
-    </form>
 
+<div class="container mt-4">
+    <a href="/task/createChooseType" class="btn btn-outline-secondary mb-3">⬅ Back</a>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Create Group Task</h4>
+        </div>
+        <div class="card-body">
+            <form action="/task/createGroup" method="post" class="needs-validation" novalidate>
+                <!-- Task Name -->
+                <div class="mb-3">
+                    <label for="taskName" class="form-label">Task Name</label>
+                    <input type="text" id="taskName" name="teamName" class="form-control" required>
+                    <div class="invalid-feedback">Task name is required.</div>
+                </div>
+
+                <!-- Task ID -->
+                <div class="mb-3">
+                    <label for="taskId" class="form-label">Task ID</label>
+                    <input type="text" id="taskId" name="teamId" class="form-control" required>
+                    <div class="invalid-feedback">Task ID is required.</div>
+                </div>
+
+                <!-- Team Invitation -->
+                <div class="mb-3">
+                    <label class="form-label">Invite Members</label>
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">Team Mate 1</span>
+                        <input type="text" id="teamMate1" name="teamMate1" class="form-control">
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text">Team Mate 2</span>
+                        <input type="text" id="teamMate2" name="teamMate2" class="form-control">
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-success w-100">Create Task</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Form Validation Script -->
+<script>
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>

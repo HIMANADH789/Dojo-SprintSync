@@ -1,64 +1,75 @@
 <%- layout('layouts/homeLayout') %>
 
-<div class="b" style="display: flex; transition: margin-left 0.3s;">
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div id="child1" class="col-md-3 bg-light shadow-lg p-3 sidebar" style="height: 100vh; position: fixed; left: 0; transition: transform 0.3s;">
+           
 
- 
-    <div id="child1" class="child1" style="height: 100vh; width: 250px; background-color: #efefef; color: black; padding-top: 20px; transition: transform 0.3s;">
-        <div class="btn-group" style="width: 100%; padding: 10px; display: flex; flex-direction: column;">
-            <div style="margin-bottom: 10px;">
-                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%;">
-                    Teams you Organise
+            <!-- Teams You Organise -->
+            <div class="mb-3">
+                <button class="btn btn-secondary w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Teams You Organise
                 </button>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu w-100">
                     <% for(let t of user.admin) { %>
-                        <li>
-                            <%= t.teamName %>
-                            <a href="/task/team/<%= t._id %>">-@<%= t.teamId %></a>
+                        <li class="dropdown-item">
+                            <strong><%= t.teamName %></strong> 
+                            <a href="/task/team/<%= t._id %>" class="text-decoration-none text-primary">@<%= t.teamId %></a>
                         </li>
                     <% } %>
                 </ul>
             </div>
-            
+
+            <!-- Teams Engaged In -->
             <div>
-                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100%;">
+                <button class="btn btn-secondary w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Teams Engaged In
                 </button>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu w-100">
                     <% for(let t of user.engagedTasks) { %>
-                        <li>
-                            <%= t.teamName %>
-                            <a href="/task/team/<%= t._id %>">-@<%= t.teamId %></a>
+                        <li class="dropdown-item">
+                            <strong><%= t.teamName %></strong> 
+                            <a href="/task/team/<%= t._id %>" class="text-decoration-none text-primary">@<%= t.teamId %></a>
                         </li>
                     <% } %>
                 </ul>
             </div>
         </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 offset-md-3 main-content" style="padding: 20px; transition: margin-left 0.3s;">
+            <h1 class="mb-4">Tasks - You Being Admin</h1>
+            <% for(let t of user.admin) { %>
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h4 class="card-title"><%= t.teamName %></h4>
+                        <a href="/task/team/<%= t._id %>" class="btn btn-primary btn-sm">@<%= t.teamId %></a>
+                    </div>
+                </div>
+            <% } %>
+
+            <h2 class="mt-4">Tasks - Engaged In</h2>
+            <% for(let t of user.engagedTasks) { %>
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h4 class="card-title"><%= t.teamName %></h4>
+                        <a href="/task/team/<%= t._id %>" class="btn btn-success btn-sm">@<%= t.teamId %></a>
+                    </div>
+                </div>
+            <% } %>
+        </div>
     </div>
-    
-    <div class="child2" style="flex-grow: 1; padding: 20px; transition: margin-left 0.3s; width: 100%;">
-        <h1>Tasks- You being Admin</h1>
-        <% for(let t of user.admin){%>
-            <h3><%=t.teamName%><a href="/task/team/<%=t._id%>">-<%=t.teamId%></a></h3>
-        <%}%>
-        <h2>Tasks- Engaged In</h2>
-        <% for(let t of user.engagedTasks){%>
-            <h3><%=t.teamName%><a href="/task/team/<%=t._id%>">-<%=t.teamId%></a></h3>
-        <%}%>
-    </div>   
-    </div>  
-    <script>
-        const toggleButton = document.getElementById('sidebar-toggler');
-            const sidebar = document.getElementById('child1');
-            const mainContent = document.querySelector('.b');
-    
-            toggleButton.addEventListener('click', function() {
-              
-                if (sidebar.style.transform === 'translateX(-100%)') {
-                    sidebar.style.transform = 'translateX(0%)';
-                    
-                } else {
-                    sidebar.style.transform = 'translateX(-100%)';
-                    
-                }
-            });
-        </script>
+</div>
+
+<!-- Sidebar Toggle Script -->
+<script>
+    document.getElementById('sidebar-toggler').addEventListener('click', function () {
+        const sidebar = document.getElementById('child1');
+        if (sidebar.style.transform === 'translateX(-100%)') {
+            sidebar.style.transform = 'translateX(0%)';
+        } else {
+            sidebar.style.transform = 'translateX(-100%)';
+        }
+    });
+</script>

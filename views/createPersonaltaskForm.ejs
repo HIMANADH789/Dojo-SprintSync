@@ -1,9 +1,48 @@
 <%- layout('layouts/homeLayout') %>
-    <a href="/task/createChooseType"><button>Back</button></a>
-    <form action="/task/createPersonal" method="post">
-        <label for="taskName">Task Name</label>
-        <input type="text" id="taskName" name="taskName">
-        <label for="taskId">Task Id</label>
-        <input type="text" id="taskId" name="taskId">
-        <button>Submit</button>
-    </form>
+
+<div class="container mt-4">
+    <a href="/task/createChooseType" class="btn btn-outline-secondary mb-3">⬅ Back</a>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Create Personal Task</h4>
+        </div>
+        <div class="card-body">
+            <form action="/task/createPersonal" method="post" class="needs-validation" novalidate>
+                <!-- Task Name -->
+                <div class="mb-3">
+                    <label for="taskName" class="form-label">Task Name</label>
+                    <input type="text" id="taskName" name="taskName" class="form-control" required>
+                    <div class="invalid-feedback">Task name is required.</div>
+                </div>
+
+                <!-- Task ID -->
+                <div class="mb-3">
+                    <label for="taskId" class="form-label">Task ID</label>
+                    <input type="text" id="taskId" name="taskId" class="form-control" required>
+                    <div class="invalid-feedback">Task ID is required.</div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-success w-100">Create Task</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Form Validation Script -->
+<script>
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>

@@ -1,29 +1,95 @@
 <%- layout('layouts/homeLayout') %>
-    <h1>Personal Tasks</h1>
-    <ul>
-    <% for(let t of user.personalTasks){ %>
-        <li><%= t.taskName %>- <a href="/task/personal/<%=user._id%>/<%=t._id%>">@<%=t.taskId %></a></li>
-    <% }%>
-    </ul>
-    <h1>Organizing Teams Tasks</h1>
-    <ul>
-    <% for(let t of user.admin){ %>
-        <li><%= t.teamName %>- <a href="/task/team/<%=t._id%>">@<%=t.teamId %></a></li>
-    <% }%>
-    </ul>
-    <h1>Engaged Tasks</h1>
-    <ul>
-    <% for(let t of user.engagedTasks){ %>
-        <li><%= t.teamName %>- <a href="/task/team/<%=t._id%>">@<%=t.teamId %></a></li>
-    <% }%>
-    </ul>
-    <ul>
-        <% for(let s of user.engagedGroupSubTasks){ %>
-            <li>
-                <%= s.subTask.name%>-(<%=s.sprint.name%>) <%= s.project.name%>
-                <form action="/task/team/project/sprint/submit-subTask/<%=s.team._id%>/<%=s.project._id%>/<%=s.sprint._id%>/<%=s.subTask._id%>" method="post">
-                    <button>Completed</button>
-                </form>
-            </li>
-            <%}%>
-    </ul>
+
+<div class="container mt-4">
+    <h2 class="text-center text-primary mb-4">Task Dashboard</h2>
+
+    <!-- Personal Tasks Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Personal Tasks</h5>
+        </div>
+        <div class="card-body">
+            <% if (user.personalTasks.length === 0) { %>
+                <p class="text-muted">No personal tasks available.</p>
+            <% } else { %>
+                <ul class="list-group">
+                    <% for(let t of user.personalTasks) { %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <%= t.taskName %> 
+                            <a href="/task/personal/<%=user._id%>/<%=t._id%>" class="btn btn-sm btn-outline-primary">@<%= t.taskId %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Organizing Teams Tasks Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Organizing Teams Tasks</h5>
+        </div>
+        <div class="card-body">
+            <% if (user.admin.length === 0) { %>
+                <p class="text-muted">No teams to organize.</p>
+            <% } else { %>
+                <ul class="list-group">
+                    <% for(let t of user.admin) { %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <%= t.teamName %> 
+                            <a href="/task/team/<%=t._id%>" class="btn btn-sm btn-outline-info">@<%= t.teamId %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Engaged Tasks Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-warning text-white">
+            <h5 class="mb-0">Engaged Tasks</h5>
+        </div>
+        <div class="card-body">
+            <% if (user.engagedTasks.length === 0) { %>
+                <p class="text-muted">No engaged tasks.</p>
+            <% } else { %>
+                <ul class="list-group">
+                    <% for(let t of user.engagedTasks) { %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <%= t.teamName %> 
+                            <a href="/task/team/<%=t._id%>" class="btn btn-sm btn-outline-warning">@<%= t.teamId %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Engaged Sub-Tasks Section -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">Engaged Sub-Tasks</h5>
+        </div>
+        <div class="card-body">
+            <% if (user.engagedGroupSubTasks.length === 0) { %>
+                <p class="text-muted">No engaged sub-tasks.</p>
+            <% } else { %>
+                <ul class="list-group">
+                    <% for(let s of user.engagedGroupSubTasks) { %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong><%= s.subTask.name %></strong> 
+                                <span class="text-muted">(<%= s.sprint.name %>) - <%= s.project.name %></span>
+                            </div>
+                            <form action="/task/team/project/sprint/submit-subTask/<%=s.team._id%>/<%=s.project._id%>/<%=s.sprint._id%>/<%=s.subTask._id%>" method="post">
+                                <button class="btn btn-sm btn-success">Completed</button>
+                            </form>
+                        </li>
+                    <% } %>
+                </ul>
+            <% } %>
+        </div>
+    </div>
+
+</div>

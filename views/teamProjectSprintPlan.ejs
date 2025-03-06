@@ -107,7 +107,6 @@
     </form>
 <% } %>
 
-<!-- Right-Click Context Menu -->
 <div id="subtask-context-menu" class="context-menu hidden">
     <ul>
         <li id="edit-subtask">Edit</li>
@@ -115,7 +114,6 @@
     </ul>
 </div>
 
-<!-- Edit Subtask Modal -->
 <div class="modal fade" id="editSubtaskModal" tabindex="-1" aria-labelledby="editSubtaskModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -222,10 +220,10 @@
                 changeDueDateBtn.addEventListener("click", function (event) {
     menu.style.display = "none";  
 
-    // ✅ Remove any existing forms before creating a new one
+
     document.querySelectorAll(".changeDueForm").forEach(form => form.remove());
 
-    // ✅ Create a new form element
+
     let form = document.createElement("form");
     form.classList.add("changeDueForm");
     form.style.position = "absolute";
@@ -236,7 +234,7 @@
     form.style.padding = "10px";
     form.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.2)";
 
-    form.method = "GET";  // ✅ Set method to POST
+    form.method = "GET"; 
     form.action = `/task/team/project/sprint/subTask-change-due-date/${selectedTeamId}/${selectedProjectId}/${selectedSprintId}/${selectedSubTaskId}`; // ✅ Correct action URL
 
     form.innerHTML = `
@@ -245,7 +243,7 @@
         <button type="submit">Submit</button>
     `;
 
-    // Append the form to the body
+ 
     document.body.appendChild(form);
 
     
@@ -298,7 +296,7 @@
             form.style.padding = "10px";
             form.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.2)";
 
-            form.method = "POST";  // ✅ Set method to POST
+            form.method = "POST"; 
             form.action = `/task/team/project/sprint/change-dueDate/${teamId}/${projectId}/${sprintId}`; // ✅ Correct action
 
             form.innerHTML = `
@@ -309,7 +307,6 @@
 
             document.body.appendChild(form);
 
-            // Hide the form when clicking outside
             document.addEventListener("click", function (outsideClick) {
                 if (!form.contains(outsideClick.target) && !button.contains(outsideClick.target)) {
                     form.remove();

@@ -1,12 +1,47 @@
 <%- layout('layouts/homeLayout') %>
-    <a href="/"><button>Back</button></a>
-    <form action="/task/createChooseType" method="post">
-        <label for="">Choose type of task</label>
-        <input type="radio" id="personal" name="choice" value="personal">
-        <label for="personal">Personal task</label>
-        <input type="radio" id="group" name="choice" value="group">
-        <label for="group">Group task</label>
-        <button>Submit</button>
 
-        
-    </form>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg p-4">
+               
+                <a href="/" class="btn btn-outline-secondary mb-3">⬅ Back</a>
+
+                <h2 class="text-center text-primary">Choose Task Type</h2>
+
+                <form id="taskForm" action="/task/createChooseType" method="post">
+                    <div class="mt-3">
+                        <label class="form-label fw-bold">Select a task type:</label>
+            
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="personal" name="choice" value="personal">
+                            <label class="form-check-label" for="personal">Personal Task</label>
+                        </div>
+
+                
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="group" name="choice" value="group">
+                            <label class="form-check-label" for="group">Group Task</label>
+                        </div>
+                        
+                     
+                        <p id="error-msg" class="text-danger mt-2" style="display: none;">Please select a task type.</p>
+                    </div>
+
+                   
+                    <button type="submit" class="btn btn-primary w-100 mt-3">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("taskForm").addEventListener("submit", function(event) {
+        const selected = document.querySelector('input[name="choice"]:checked');
+        if (!selected) {
+            event.preventDefault();
+            document.getElementById("error-msg").style.display = "block";
+        }
+    });
+</script>

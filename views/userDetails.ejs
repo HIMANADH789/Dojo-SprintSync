@@ -1,21 +1,41 @@
 <%- layout('layouts/homeLayout') %>
-    <h1><%= friend.name %></h1>
-    <%= friend.username %>
-    <ul>
-        <% for(let f of friend.followers) { %>
-            <li><%= f.username %></li>
-        <% } %>
-    </ul>
-    <ul>
-        <% for(let f of friend.following) { %>
-            <li><%= f.username %></li>
-        <% } %>
-    </ul>
-    <% if(!isFriend) {%>
-    <form action="/user/requestFriend/<%=friend._id%>" method="post">
-        <button>Request</button>
-    </form>
-    <% } else { %>
-        <h1>Already a friend</h1>
-    <% } %>
-    
+
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <div class="text-center">
+            <h1 class="fw-bold text-primary"><%= friend.name %></h1>
+            <p class="text-muted">@<%= friend.username %></p>
+        </div>
+
+        <div class="row mt-4">
+ 
+            <div class="col-md-6">
+                <h3 class="text-success">Followers</h3>
+                <ul class="list-group">
+                    <% for(let f of friend.followers) { %>
+                        <li class="list-group-item"><%= f.username %></li>
+                    <% } %>
+                </ul>
+            </div>
+
+            <div class="col-md-6">
+                <h3 class="text-info">Following</h3>
+                <ul class="list-group">
+                    <% for(let f of friend.following) { %>
+                        <li class="list-group-item"><%= f.username %></li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <% if(!isFriend) { %>
+                <form action="/user/requestFriend/<%= friend._id %>" method="post">
+                    <button class="btn btn-primary btn-lg">Send Friend Request</button>
+                </form>
+            <% } else { %>
+                <h3 class="text-success fw-bold">Already a friend</h3>
+            <% } %>
+        </div>
+    </div>
+</div>

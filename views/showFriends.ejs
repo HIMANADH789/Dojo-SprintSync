@@ -1,10 +1,38 @@
 <%- layout('layouts/homeLayout') %>
-    <h1>Friends</h1>
-    <h2>Followers</h2>
-    <% for(let f of followers){ %>
-        <li><%=f.username %></li>
-    <%} %>
-    <h2>Following</h2>
-    <% for(let f of following){ %>
-        <li><%=f.username %></li>
-    <%} %>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg p-4">
+                <h1 class="text-center text-primary">Friends</h1>
+
+             
+                <div class="mt-4">
+                    <h2 class="text-success">Followers</h2>
+                    <% if (followers.length > 0) { %>
+                        <ul class="list-group">
+                            <% for (let f of followers) { %>
+                                <li class="list-group-item"><%= f.username %></li>
+                            <% } %>
+                        </ul>
+                    <% } else { %>
+                        <p class="text-muted">No followers yet.</p>
+                    <% } %>
+                </div>
+
+                <div class="mt-4">
+                    <h2 class="text-info">Following</h2>
+                    <% if (following.length > 0) { %>
+                        <ul class="list-group">
+                            <% for (let f of following) { %>
+                                <li class="list-group-item"><%= f.username %></li>
+                            <% } %>
+                        </ul>
+                    <% } else { %>
+                        <p class="text-muted">Not following anyone yet.</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
